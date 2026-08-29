@@ -12,7 +12,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: tiny-app
+              app: demo
       ports:
         - protocol: TCP
           port: 5432

@@ -1,49 +1,49 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: app-db
+  name: demo-db
 type: Opaque
 stringData:
   PGHOST: postgres
   PGPORT: "5432"
   PGUSER: app
-  PGPASSWORD: secret
+  PGPASSWORD: appsecret
   PGDATABASE: appdb
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tiny-app
+  name: demo
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: tiny-app
+      app: demo
   template:
     metadata:
       labels:
-        app: tiny-app
+        app: demo
     spec:
       nodeSelector:
         workload: app
       containers:
         - name: app
-          image: tiny-app:dev
+          image: demo:dev
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           envFrom:
             - secretRef:
-                name: app-db
+                name: demo-db
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tiny-app
+  name: demo
 spec:
   type: ClusterIP
   selector:
-    app: tiny-app
+    app: demo
   ports:
     - port: 80
       targetPort: 3000

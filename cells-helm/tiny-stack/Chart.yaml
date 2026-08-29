@@ -1,0 +1,5 @@
+apiVersion: v2
+name: tiny-stack
+description: App + Postgres + Ingress + netpol for one cell
+version: 0.1.0
+appVersion: "0.1.0"

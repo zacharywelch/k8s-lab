@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: demo-db
+type: Opaque
+stringData:
+  PGHOST: postgres
+  PGPORT: "5432"
+  PGUSER: app
+  PGPASSWORD: appsecret
+  PGDATABASE: appdb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+  labels:
+    cell: {{ .Values.cell | quote }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      nodeSelector:
+        workload: app
+      containers:
+        - name: app
+          image: demo:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: demo-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  labels:
+    cell: {{ .Values.cell | quote }}
+spec:
+  type: ClusterIP
+  selector:
+    app: demo
+  ports:
+    - port: 80
+      targetPort: 3000
